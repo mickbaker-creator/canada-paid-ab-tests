@@ -272,12 +272,15 @@
     .eh-tl-conn:nth-of-type(2) { grid-column: 4; --cn-delay: 0.66s; }
     .eh-tl-conn:nth-of-type(3) { grid-column: 6; --cn-delay: 1.32s; }
 
-    /* Left-to-right fill overlay — (1) duration × 1.1: 0.45 → 0.495 */
+    /* Left-to-right fill overlay — (1) duration × 1.1: 0.45 → 0.495
+       margin-left + extra width extend the fill 1.125rem (half-circle)
+       under each adjacent circle so no grey track gap is visible. */
     .eh-tl-conn::before {
       content: '';
       position: absolute;
       top: 0; left: 0;
-      width: 100%; height: 100%;
+      margin-left: -1.125rem;
+      width: calc(100% + 2.25rem); height: 100%;
       background: var(--wp--preset--color--violet-500);
       transform: scaleX(0);
       transform-origin: left;
@@ -334,7 +337,7 @@
       border: 1.5px solid var(--wp--preset--color--neutral-200);
       display: flex;
       flex-direction: column;
-      padding: 0.75rem;
+      padding: 0;
       padding-top: 2.5rem;           /* space for absolute-positioned badge strip */
       position: relative;
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
@@ -369,7 +372,7 @@
     */
     .eh-card-inner {
       background: var(--wp--preset--color--white);
-      border-radius: 0.75rem;
+      border-radius: 0 0 0.75rem 0.75rem;
       border: none;                  /* outer wrap is the only visible border */
       padding: 1.5rem 1.25rem;
       display: flex;
