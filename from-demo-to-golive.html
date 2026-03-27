@@ -334,7 +334,9 @@
       border: 1.5px solid var(--wp--preset--color--neutral-200);
       display: flex;
       flex-direction: column;
-      padding: 0.75rem;              /* uniform — badge sits in this space at top */
+      padding: 0.75rem;
+      padding-top: 2.5rem;           /* space for absolute-positioned badge strip */
+      position: relative;
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       /* (1) duration × 1.1: 0.4 → 0.44 */
       transition:
@@ -342,9 +344,13 @@
         border-color 0.44s ease var(--anim-delay, 0s);
     }
 
-    /* Badge — sits in outer card's padding space above the inner card */
+    /* Badge — absolutely positioned in the outer coloured strip above the inner card */
     .eh-card-badge {
-      padding: 0.5rem 1rem;          /* centred text in backing layer strip */
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0.6rem 1rem;
       text-align: center;
       font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--xs);
@@ -363,16 +369,15 @@
     */
     .eh-card-inner {
       background: var(--wp--preset--color--white);
-      border-radius: 0.625rem;
-      border: 1.5px solid var(--wp--preset--color--neutral-200);
+      border-radius: 0.75rem;
+      border: none;                  /* outer wrap is the only visible border */
       padding: 1.5rem 1.25rem;
       display: flex;
       flex-direction: column;
       gap: var(--wp--preset--spacing--3);
       flex: 1;
-      margin: 0;                     /* no negative margins — sits in normal flow */
+      margin: 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: border-color 0.44s ease var(--anim-delay, 0s);
     }
 
     /* (7) Card title: 1.125rem / 700 / 1.25 */
@@ -403,10 +408,6 @@
     .eh-section:is(:hover, .is-visible) .eh-card-wrap--specialist .eh-card-badge {
       color: var(--wp--preset--color--violet-500);
     }
-    .eh-section:is(:hover, .is-visible) .eh-card-wrap--specialist .eh-card-inner {
-      border-color: var(--wp--preset--color--violet-500);
-    }
-
     /* Green — card 4 */
     .eh-section:is(:hover, .is-visible) .eh-card-wrap--green {
       background:   #F5FFDF;
@@ -414,9 +415,6 @@
     }
     .eh-section:is(:hover, .is-visible) .eh-card-wrap--green .eh-card-badge {
       color: var(--wp--preset--color--neon-green-800);
-    }
-    .eh-section:is(:hover, .is-visible) .eh-card-wrap--green .eh-card-inner {
-      border-color: var(--wp--preset--color--neon-green-400);
     }
 
     /* ─── CTA ───────────────────────────────────────────────────────── */
