@@ -113,6 +113,22 @@
       align-items: center;
       max-width: 52rem;
       margin: 0 auto var(--wp--preset--spacing--10);
+      position: relative;
+    }
+
+    /*
+      Full-width track line — spans all 7 grid columns in row 2.
+      Circles and chevrons sit on top (z-index 2+) with a matching
+      background, creating the illusion of clean termination.
+    */
+    .eh-tl-track {
+      grid-row: 2;
+      grid-column: 1 / -1;
+      height: 1px;
+      background: var(--wp--preset--color--neutral-200);
+      align-self: center;
+      z-index: 0;
+      pointer-events: none;
     }
 
     /* ── Labels (row 1) ── */
@@ -149,7 +165,7 @@
       height: 2.25rem;
       border-radius: 50%;
       border: 2px solid var(--wp--preset--color--neutral-200);
-      background: var(--wp--preset--color--white);
+      background: #F9F5FF; /* matches section gradient end — masks track line behind circle */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -165,6 +181,15 @@
         border-color 0.33s ease var(--c-delay, 0s),
         color        0.33s ease var(--c-delay, 0s);
     }
+
+    /*
+      Explicit column placement via class — reliable regardless of
+      how many div siblings exist (no nth-of-type dependency).
+    */
+    .eh-tl-c1 { grid-column: 1; }
+    .eh-tl-c2 { grid-column: 3; }
+    .eh-tl-c3 { grid-column: 5; }
+    .eh-tl-c4 { grid-column: 7; }
 
     /* (1) delays × 1.1: 0.1→0.11, 0.7→0.77, 1.85→2.035 */
     .eh-tl-c2 { --c-delay: 0.11s;  }
@@ -213,15 +238,33 @@
     .eh-tl-conn {
       grid-row: 2;
       position: relative;
-      height: 1px;              /* (2) was 2px */
-      background: var(--wp--preset--color--neutral-200);
+      height: 1px;
+      background: transparent; /* grey comes from .eh-tl-track — connector is overlay only */
       align-self: center;
-      margin: 0;                /* (2) was -1.125rem — removed */
+      margin: 0;
       z-index: 1;
       /* color drives the SVG chevron via currentColor */
       color: var(--wp--preset--color--neutral-400);
       /* (1) duration × 1.1: 0.05 → 0.055; offset × 1.1: 0.45 → 0.495 */
       transition: color 0.055s ease calc(var(--cn-delay, 0s) + 0.495s);
+    }
+
+    /*
+      Pill mask behind each chevron — hides the track line where
+      the arrow sits. Uses section gradient end-colour (#F9F5FF).
+    */
+    .eh-tl-conn::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 10px;
+      border-radius: 5px;
+      background: #F9F5FF;
+      z-index: 2; /* above track (0), below SVG (3) */
+      pointer-events: none;
     }
 
     /* (1) delays × 1.1: 0.6→0.66, 1.2→1.32 */
@@ -280,10 +323,10 @@
     .eh-card-anim-4 { --anim-delay: 1.98s; }
 
     /*
-      (6) Two-card layered structure:
-      Outer wrap = backing card — own box-shadow, padding-top for badge breathing room.
-      Inner card = foreground white card — own box-shadow, sits on top with -1rem margin.
-      overflow: visible so inner card's shadow is not clipped.
+      Two-card layered structure.
+      Outer wrap = coloured backing layer: border, bg tint, shadow, uniform padding.
+      Inner card = white foreground card: sits in normal flow below badge, no overlap.
+      Outer card peeks ~0.75rem on all sides behind the inner card.
     */
     .eh-card-wrap {
       border-radius: 1rem;
@@ -291,18 +334,17 @@
       border: 1.5px solid var(--wp--preset--color--neutral-200);
       display: flex;
       flex-direction: column;
-      overflow: visible;             /* (6) allows inner card shadow to show */
-      padding-top: 1rem;             /* (6) breathing room above inner card */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07); /* (6) outer layer shadow */
+      padding: 0.75rem;              /* uniform — badge sits in this space at top */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       /* (1) duration × 1.1: 0.4 → 0.44 */
       transition:
         background   0.44s ease var(--anim-delay, 0s),
         border-color 0.44s ease var(--anim-delay, 0s);
     }
 
-    /* Badge strip */
+    /* Badge — sits in outer card's padding space above the inner card */
     .eh-card-badge {
-      padding: 0 1.5rem 0.65rem;
+      padding: 0.5rem 1rem;          /* centred text in backing layer strip */
       text-align: center;
       font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--xs);
@@ -315,21 +357,22 @@
     }
 
     /*
-      (6) Inner white card — overlaps outer by 1rem at top, peeks
-      outer on sides and bottom by 0.375rem.
-      (8) padding 2rem 1.5rem → 1.5rem 1.25rem
+      Inner white card — margin: 0, sits naturally below badge.
+      Outer card shows on all 4 sides as a ~0.75rem coloured border.
+      border-radius slightly smaller than outer (0.625rem vs 1rem) = nested look.
     */
     .eh-card-inner {
       background: var(--wp--preset--color--white);
-      border-radius: 0.75rem;        /* (6) all corners rounded — card floats on top */
-      border: 1px solid var(--wp--preset--color--neutral-200);
-      padding: 1.5rem 1.25rem;       /* (8) was 2rem 1.5rem */
+      border-radius: 0.625rem;
+      border: 1.5px solid var(--wp--preset--color--neutral-200);
+      padding: 1.5rem 1.25rem;
       display: flex;
       flex-direction: column;
       gap: var(--wp--preset--spacing--3);
       flex: 1;
-      margin: -1rem 0.375rem 0.375rem 0.375rem; /* (6) was -0.25rem 0 0 0 */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);   /* (6) inner card shadow */
+      margin: 0;                     /* no negative margins — sits in normal flow */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: border-color 0.44s ease var(--anim-delay, 0s);
     }
 
     /* (7) Card title: 1.125rem / 700 / 1.25 */
@@ -360,6 +403,9 @@
     .eh-section:is(:hover, .is-visible) .eh-card-wrap--specialist .eh-card-badge {
       color: var(--wp--preset--color--violet-500);
     }
+    .eh-section:is(:hover, .is-visible) .eh-card-wrap--specialist .eh-card-inner {
+      border-color: var(--wp--preset--color--violet-500);
+    }
 
     /* Green — card 4 */
     .eh-section:is(:hover, .is-visible) .eh-card-wrap--green {
@@ -368,6 +414,9 @@
     }
     .eh-section:is(:hover, .is-visible) .eh-card-wrap--green .eh-card-badge {
       color: var(--wp--preset--color--neon-green-800);
+    }
+    .eh-section:is(:hover, .is-visible) .eh-card-wrap--green .eh-card-inner {
+      border-color: var(--wp--preset--color--neon-green-400);
     }
 
     /* ─── CTA ───────────────────────────────────────────────────────── */
@@ -456,7 +505,7 @@
         </svg>
       </span>
 
-      <div class="eh-tl-circle"          aria-label="Step 1: Demo">1</div>
+      <div class="eh-tl-circle eh-tl-c1" aria-label="Step 1: Demo">1</div>
       <div class="eh-tl-circle eh-tl-c2" aria-label="Step 2: Implementation">2</div>
       <div class="eh-tl-circle eh-tl-c3" aria-label="Step 3: First Pay Run">3</div>
       <div class="eh-tl-circle eh-tl-c4" aria-label="Step 4: Growth">
@@ -468,6 +517,9 @@
           </svg>
         </span>
       </div>
+
+      <!-- Full-width track line — sits behind everything at z-index 0 -->
+      <div class="eh-tl-track" aria-hidden="true"></div>
 
     </div>
 
