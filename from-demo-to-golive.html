@@ -10,40 +10,38 @@
   <style>
     /* ─── EH Design Tokens ─────────────────────────────────────────── */
     :root {
-      --wp--preset--color--black:         #000000;
-      --wp--preset--color--white:         #FFFFFF;
-      --wp--preset--color--off-black:     #121214;
-      --wp--preset--color--off-white:     #FCFBFF;
-      --wp--preset--color--dark-grey:     #545454;
-      --wp--preset--color--neutral-800:   #27272A;
-      --wp--preset--color--neutral-700:   #3F3F46;
-      --wp--preset--color--neutral-500:   #71717A;
-      --wp--preset--color--neutral-400:   #A9A9B2;
-      --wp--preset--color--neutral-200:   #E4E4E7;
-      --wp--preset--color--neutral-100:   #F4F4F5;
-      --wp--preset--color--dark-violet:   #280541;
-      --wp--preset--color--deep-violet:   #460078;
-      --wp--preset--color--violet-500:    #7622D7;
-      --wp--preset--color--primary-violet:#A569FF;
-      --wp--preset--color--violet-400:    #BB91EB;
-      --wp--preset--color--light-violet-500: #9A58FC;
-      --wp--preset--color--light-violet-400: #B382FD;
+      --wp--preset--color--black:            #000000;
+      --wp--preset--color--white:            #FFFFFF;
+      --wp--preset--color--off-black:        #121214;
+      --wp--preset--color--off-white:        #FCFBFF;
+      --wp--preset--color--dark-grey:        #545454;
+      --wp--preset--color--neutral-800:      #27272A;
+      --wp--preset--color--neutral-700:      #3F3F46;
+      --wp--preset--color--neutral-500:      #71717A;
+      --wp--preset--color--neutral-400:      #A9A9B2;
+      --wp--preset--color--neutral-200:      #E4E4E7;
+      --wp--preset--color--neutral-100:      #F4F4F5;
+      --wp--preset--color--dark-violet:      #280541;
+      --wp--preset--color--deep-violet:      #460078;
+      --wp--preset--color--violet-500:       #7622D7;
+      --wp--preset--color--primary-violet:   #A569FF;
+      --wp--preset--color--violet-400:       #BB91EB;
       --wp--preset--color--light-violet-300: #CDACFE;
       --wp--preset--color--light-violet-200: #E6D5FE;
       --wp--preset--color--light-violet-50:  #F9F5FF;
-      --wp--preset--color--light-violet-10:  #F2E9FB;
+      --wp--preset--color--neon-green-800:   #4F8203;
+      --wp--preset--color--neon-green-700:   #67AA03;
+      --wp--preset--color--neon-green-400:   #BAFC58;
       --wp--preset--gradient--white-to-lv-50:
         linear-gradient(180deg, #FFFFFF 0%, #F9F5FF 100%);
       --wp--preset--font-family--heading: 'Saiga', serif;
       --wp--preset--font-family--default: 'DM Sans', sans-serif;
-      --wp--preset--font-size--xs:  0.75rem;
-      --wp--preset--font-size--sm:  0.875rem;
-      --wp--preset--font-size--md:  1rem;
-      --wp--preset--font-size--lg:  1.125rem;
-      --wp--preset--font-size--xl:  1.5rem;
+      --wp--preset--font-size--xs:   0.75rem;
+      --wp--preset--font-size--sm:   0.875rem;
+      --wp--preset--font-size--md:   1rem;
+      --wp--preset--font-size--lg:   1.125rem;
+      --wp--preset--font-size--xl:   1.5rem;
       --wp--preset--font-size--2-xl: 1.75rem;
-      --wp--preset--font-size--3-xl: 2.25rem;
-      --wp--preset--font-size--4-xl: 2.625rem;
       --wp--preset--spacing--1:  0.25rem;
       --wp--preset--spacing--2:  0.5rem;
       --wp--preset--spacing--3:  0.75rem;
@@ -55,7 +53,6 @@
       --wp--preset--spacing--12: 3rem;
       --wp--preset--spacing--16: 4rem;
       --wp--preset--spacing--20: 5rem;
-      --wp--preset--spacing--24: 6rem;
     }
 
     *, *::before, *::after {
@@ -82,13 +79,13 @@
       margin: 0 auto;
     }
 
-    /* ─── Heading ───────────────────────────────────────────────────── */
+    /* ─── Heading (fix 4) ───────────────────────────────────────────── */
     .eh-section__heading {
       font-family: var(--wp--preset--font-family--heading);
-      font-size: clamp(2.25rem, 5vw, 4rem);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
       font-weight: 600;
       color: var(--wp--preset--color--off-black);
-      line-height: 1.1;
+      line-height: 1.15;
       margin-bottom: var(--wp--preset--spacing--4);
     }
 
@@ -103,22 +100,23 @@
 
     /* ─── Timeline ──────────────────────────────────────────────────── */
     /*
-      7-column grid: [step] [conn] [step] [conn] [step] [conn] [step]
-      2 rows: labels (row 1), circles (row 2)
+      7-column grid: [circle] [conn] [circle] [conn] [circle] [conn] [circle]
+      Row 1 = labels, Row 2 = circles + connectors.
 
-      FIX: Labels are <div> and connectors are <span> so nth-of-type
-      selects the correct elements independently.
+      Labels are divs: nth-of-type(1–4) → columns 1,3,5,7
+      Connectors are spans: nth-of-type(1–3) → columns 2,4,6
+      Circles auto-place into remaining cells in row 2.
     */
     .eh-timeline {
       display: grid;
       grid-template-columns: auto 1fr auto 1fr auto 1fr auto;
-      grid-template-rows: auto 2.75rem;
+      grid-template-rows: auto 2.25rem;
       align-items: center;
       max-width: 52rem;
       margin: 0 auto var(--wp--preset--spacing--10);
     }
 
-    /* Labels — row 1, use <div> so nth-of-type is isolated */
+    /* ── Labels (row 1) ── */
     .eh-tl-label {
       grid-row: 1;
       font-family: var(--wp--preset--font-family--default);
@@ -129,23 +127,24 @@
       color: var(--wp--preset--color--neutral-400);
       text-align: center;
       padding-bottom: var(--wp--preset--spacing--2);
+      transition: color 0.3s ease var(--label-delay, 0s);
     }
 
-    .eh-tl-label--active {
+    .eh-tl-label:nth-of-type(1) { grid-column: 1; }
+    .eh-tl-label:nth-of-type(2) { grid-column: 3; --label-delay: 0.05s;  }
+    .eh-tl-label:nth-of-type(3) { grid-column: 5; --label-delay: 0.65s;  }
+    .eh-tl-label:nth-of-type(4) { grid-column: 7; }
+
+    .eh-section.is-visible .eh-tl-label:nth-of-type(2),
+    .eh-section.is-visible .eh-tl-label:nth-of-type(3) {
       color: var(--wp--preset--color--violet-500);
     }
 
-    /* Explicit column placement for labels */
-    .eh-tl-label:nth-of-type(1) { grid-column: 1; }
-    .eh-tl-label:nth-of-type(2) { grid-column: 3; }
-    .eh-tl-label:nth-of-type(3) { grid-column: 5; }
-    .eh-tl-label:nth-of-type(4) { grid-column: 7; }
-
-    /* Circles — row 2, use <button> or <div>, separate from labels */
+    /* ── Circles (fix 3 — 2.25rem, 0.875rem font) ── */
     .eh-tl-circle {
       grid-row: 2;
-      width: 2.75rem;
-      height: 2.75rem;
+      width: 2.25rem;
+      height: 2.25rem;
       border-radius: 50%;
       border: 2px solid var(--wp--preset--color--neutral-200);
       background: var(--wp--preset--color--white);
@@ -153,61 +152,104 @@
       align-items: center;
       justify-content: center;
       font-family: var(--wp--preset--font-family--default);
-      font-size: var(--wp--preset--font-size--md);
+      font-size: var(--wp--preset--font-size--sm);
       font-weight: 600;
       color: var(--wp--preset--color--neutral-400);
       justify-self: center;
       position: relative;
-      z-index: 1;
+      z-index: 2; /* sit above connector line and fill */
+      transition:
+        border-color 0.3s ease var(--c-delay, 0s),
+        color        0.3s ease var(--c-delay, 0s);
     }
 
-    .eh-tl-circle--active {
+    /* Circle 2 activates at step 1, circle 3 at step 2, circle 4 at step 4 */
+    .eh-tl-c2 { --c-delay: 0.1s;  }
+    .eh-tl-c3 { --c-delay: 0.7s;  }
+    .eh-tl-c4 { --c-delay: 1.85s; }
+
+    .eh-section.is-visible .eh-tl-c2,
+    .eh-section.is-visible .eh-tl-c3 {
       border-color: var(--wp--preset--color--violet-500);
+      color:        var(--wp--preset--color--violet-500);
+    }
+
+    .eh-section.is-visible .eh-tl-c4 {
+      border-color: var(--wp--preset--color--neon-green-700);
+      color:        var(--wp--preset--color--neon-green-700);
+    }
+
+    /* Circle 4 — number ↔ checkmark swap (fix 7d) */
+    .eh-tl-c4 { overflow: hidden; }
+
+    .eh-tl-c4-num,
+    .eh-tl-c4-chk {
+      position: absolute;
+      transition: opacity 0.25s ease;
+    }
+    .eh-tl-c4-num { transition-delay: 1.85s; }
+    .eh-tl-c4-chk { opacity: 0; transition-delay: 2.05s; }
+
+    .eh-section.is-visible .eh-tl-c4-num { opacity: 0; }
+    .eh-section.is-visible .eh-tl-c4-chk { opacity: 1; }
+
+    /* ── Connectors (fix 2) ── */
+    /*
+      Negative margin extends each connector line beneath the adjacent
+      circles (which sit above via z-index: 2). The line visually
+      terminates at the circle border edge.
+    */
+    .eh-tl-conn {
+      grid-row: 2;
+      position: relative;
+      height: 2px;
+      background: var(--wp--preset--color--neutral-200);
+      align-self: center;
+      margin: 0 -1.125rem; /* extend half-circle-width under each circle */
+      z-index: 1;
+      /* color drives the SVG arrow via currentColor */
+      color: var(--wp--preset--color--neutral-400);
+      transition: color 0.05s ease calc(var(--cn-delay, 0s) + 0.45s);
+    }
+
+    .eh-tl-conn:nth-of-type(1) { grid-column: 2; --cn-delay: 0s;   }
+    .eh-tl-conn:nth-of-type(2) { grid-column: 4; --cn-delay: 0.6s; }
+    .eh-tl-conn:nth-of-type(3) { grid-column: 6; --cn-delay: 1.2s; }
+
+    /* Left-to-right fill overlay */
+    .eh-tl-conn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--wp--preset--color--violet-500);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.45s ease var(--cn-delay, 0s);
+    }
+
+    .eh-section.is-visible .eh-tl-conn::before {
+      transform: scaleX(1);
+    }
+
+    .eh-section.is-visible .eh-tl-conn {
       color: var(--wp--preset--color--violet-500);
     }
 
-    /* Explicit column placement for circles */
-    .eh-tl-circle:nth-of-type(1) { grid-column: 1; }
-    .eh-tl-circle:nth-of-type(2) { grid-column: 3; }
-    .eh-tl-circle:nth-of-type(3) { grid-column: 5; }
-    .eh-tl-circle:nth-of-type(4) { grid-column: 7; }
-
-    /* Connectors — row 2, <span> elements */
-    .eh-tl-conn {
-      grid-row: 2;
-      height: 2px;
-      background: var(--wp--preset--color--neutral-200);
-      position: relative;
-      align-self: center;
-    }
-
-    .eh-tl-conn--active {
-      background: var(--wp--preset--color--violet-500);
-    }
-
-    .eh-tl-conn::after {
-      content: '';
+    /* SVG chevron arrow (fix 2) — replaces CSS triangle */
+    .eh-tl-arrow {
       position: absolute;
-      right: -6px;
+      right: -3px; /* centres arrowhead at circle left edge */
       top: 50%;
       transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-top:    5px solid transparent;
-      border-bottom: 5px solid transparent;
-      border-left:   7px solid var(--wp--preset--color--neutral-200);
+      width: 8px;
+      height: 12px;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 3; /* above fill, below circle */
     }
 
-    .eh-tl-conn--active::after {
-      border-left-color: var(--wp--preset--color--violet-500);
-    }
-
-    /* Explicit column placement for connectors */
-    .eh-tl-conn:nth-of-type(1) { grid-column: 2; }
-    .eh-tl-conn:nth-of-type(2) { grid-column: 4; }
-    .eh-tl-conn:nth-of-type(3) { grid-column: 6; }
-
-    /* ─── Cards grid ────────────────────────────────────────────────── */
+    /* ─── Cards (fix 1, 5, 6) ─────────────────────────────────────── */
     .eh-cards {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -217,53 +259,30 @@
     }
 
     /*
-      TWO-LAYER CARD STRUCTURE
-      ─────────────────────────
-      .eh-card-wrap  = outer "back" layer — neutral bg, peeks out at top
-                       showing the badge. Has border (grey or violet).
-      .eh-card-inner = white foreground card — title + description.
-                       Sits inside the outer wrap, pushed down from badge.
+      Animation delay per card — CSS custom property, inherited by
+      .eh-card-badge and .eh-card-inner children.
     */
+    .eh-card-anim-1 { --anim-delay: 0s;   }
+    .eh-card-anim-2 { --anim-delay: 0.6s; }
+    .eh-card-anim-3 { --anim-delay: 1.2s; }
+    .eh-card-anim-4 { --anim-delay: 1.8s; }
+
+    /* Base card — ALL cards start grey */
     .eh-card-wrap {
       border-radius: 1rem;
       background: var(--wp--preset--color--neutral-100);
       border: 1.5px solid var(--wp--preset--color--neutral-200);
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* keeps inner card corners clean at bottom */
+      overflow: hidden;
+      transition:
+        background   0.4s ease var(--anim-delay, 0s),
+        border-color 0.4s ease var(--anim-delay, 0s);
     }
 
-    /* Specialist variant: gradient border via wrapper with pseudo-element */
-    .eh-card-wrap--specialist {
-      background: var(--wp--preset--color--light-violet-50);
-      border: none;
-      position: relative;
-    }
-
-    .eh-card-wrap--specialist::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 1rem;
-      padding: 1.5px;
-      background: linear-gradient(
-        160deg,
-        var(--wp--preset--color--violet-500) 0%,
-        var(--wp--preset--color--light-violet-300) 50%,
-        var(--wp--preset--color--primary-violet) 100%
-      );
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Badge row — top section of the outer card, badge centred */
+    /* Badge strip — visible at top above inner card */
     .eh-card-badge {
-      padding: 0.75rem 1.5rem 0.65rem;
+      padding: 0.65rem 1.5rem;
       text-align: center;
       font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--xs);
@@ -271,32 +290,23 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--wp--preset--color--neutral-400);
-      position: relative;
-      z-index: 1;
+      transition: color 0.4s ease var(--anim-delay, 0s);
     }
 
-    .eh-card-wrap--specialist .eh-card-badge {
-      color: var(--wp--preset--color--violet-500);
-    }
-
-    /* Inner white card — sits below the badge, overlapping the outer slightly */
+    /*
+      Inner card — sits flush on left/right/bottom (margin 0),
+      -0.25rem top overlap so only the badge strip of the outer
+      wrap peeks out above it. (fix 1)
+    */
     .eh-card-inner {
       background: var(--wp--preset--color--white);
-      border-radius: 0.875rem;
-      border: 1.5px solid var(--wp--preset--color--neutral-200);
+      border-radius: 0 0 calc(1rem - 2px) calc(1rem - 2px);
       padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--6);
       display: flex;
       flex-direction: column;
       gap: var(--wp--preset--spacing--3);
       flex: 1;
-      position: relative;
-      z-index: 1;
-      /* Negative top margin pulls card up over the outer back layer */
-      margin: -0.5rem 0.5rem 0.5rem 0.5rem;
-    }
-
-    .eh-card-wrap--specialist .eh-card-inner {
-      border-color: var(--wp--preset--color--light-violet-200);
+      margin: -0.25rem 0 0 0;
     }
 
     .eh-card__title {
@@ -313,6 +323,29 @@
       font-weight: 400;
       color: var(--wp--preset--color--neutral-500);
       line-height: 1.55;
+    }
+
+    /* ── Animated card states (triggered by .is-visible) ── */
+
+    /* Violet — cards 1, 2, 3 (fix 5) */
+    .eh-section.is-visible .eh-card-wrap--specialist {
+      background:   var(--wp--preset--color--light-violet-50);
+      border-color: var(--wp--preset--color--violet-500);
+    }
+    .eh-section.is-visible .eh-card-wrap--specialist .eh-card-badge {
+      color: var(--wp--preset--color--violet-500);
+    }
+
+    /* Green — card 4 (fix 6) */
+    .eh-card-wrap--green {
+      /* no static styling — starts grey like all cards */
+    }
+    .eh-section.is-visible .eh-card-wrap--green {
+      background:   #F5FFDF;
+      border-color: var(--wp--preset--color--neon-green-400);
+    }
+    .eh-section.is-visible .eh-card-wrap--green .eh-card-badge {
+      color: var(--wp--preset--color--neon-green-800);
     }
 
     /* ─── CTA ───────────────────────────────────────────────────────── */
@@ -336,7 +369,7 @@
     }
 
     .eh-btn:hover {
-      background: var(--wp--preset--color--deep-violet);
+      background:   var(--wp--preset--color--deep-violet);
       border-color: var(--wp--preset--color--deep-violet);
     }
 
@@ -348,9 +381,7 @@
     }
 
     @media (max-width: 768px) {
-      .eh-timeline {
-        display: none;
-      }
+      .eh-timeline { display: none; }
       .eh-cards {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--wp--preset--spacing--4);
@@ -358,58 +389,68 @@
     }
 
     @media (max-width: 560px) {
-      .eh-cards {
-        grid-template-columns: 1fr;
-      }
+      .eh-cards { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<section class="eh-section">
+<section class="eh-section" id="eh-section">
   <div class="eh-section__inner">
 
     <h2 class="eh-section__heading">From demo to go-live.</h2>
     <p class="eh-section__sub">This doesn't stop at the demo. We're with you for the long term.</p>
 
     <!--
-      TIMELINE FIX
-      ─────────────
-      Labels are <div class="eh-tl-label"> (nth-of-type counts only divs)
-      Circles are <div class="eh-tl-circle"> — same type as labels BUT
-        placed in a separate parent so nth-of-type resets correctly.
-      Connectors are <span class="eh-tl-conn"> (nth-of-type counts only spans)
-
-      Correct order per design: DEMO → IMPLEMENTATION → FIRST PAY RUN → GROWTH
-      Active steps: 2 (Implementation) and 3 (First Pay Run)
-      Active connectors: 1→2, 2→3
+      TIMELINE
+      ─────────
+      All circles/connectors/labels start grey.
+      .eh-section.is-visible drives all colour transitions via CSS.
+      Labels:     divs, nth-of-type(1-4) → columns 1,3,5,7
+      Connectors: spans, nth-of-type(1-3) → columns 2,4,6
+      Circles:    divs auto-placed in row 2 (columns 1,3,5,7)
     -->
     <div class="eh-timeline" role="list" aria-label="Onboarding stages">
 
-      <!-- Labels row 1 -->
+      <!-- Row 1: labels -->
       <div class="eh-tl-label">Demo</div>
-      <div class="eh-tl-label eh-tl-label--active">Implementation</div>
-      <div class="eh-tl-label eh-tl-label--active">First Pay Run</div>
+      <div class="eh-tl-label">Implementation</div>
+      <div class="eh-tl-label">First Pay Run</div>
       <div class="eh-tl-label">Growth</div>
 
-      <!-- Connectors row 2 -->
-      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
-      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
-      <span class="eh-tl-conn" aria-hidden="true"></span>
+      <!-- Row 2: connectors (spans) + circles (divs auto-place) -->
+      <span class="eh-tl-conn" aria-hidden="true">
+        <!-- SVG chevron arrow — uses currentColor so it transitions with the line -->
+        <svg class="eh-tl-arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1.5 1 L6.5 6 L1.5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="eh-tl-conn" aria-hidden="true">
+        <svg class="eh-tl-arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1.5 1 L6.5 6 L1.5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="eh-tl-conn" aria-hidden="true">
+        <svg class="eh-tl-arrow" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M1.5 1 L6.5 6 L1.5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
 
-      <!-- Circles row 2 -->
-      <div class="eh-tl-circle">1</div>
-      <div class="eh-tl-circle eh-tl-circle--active">2</div>
-      <div class="eh-tl-circle eh-tl-circle--active">3</div>
-      <div class="eh-tl-circle">4</div>
+      <div class="eh-tl-circle"          aria-label="Step 1: Demo">1</div>
+      <div class="eh-tl-circle eh-tl-c2" aria-label="Step 2: Implementation">2</div>
+      <div class="eh-tl-circle eh-tl-c3" aria-label="Step 3: First Pay Run">3</div>
+      <div class="eh-tl-circle eh-tl-c4" aria-label="Step 4: Growth">
+        <span class="eh-tl-c4-num" aria-hidden="true">4</span>
+        <span class="eh-tl-c4-chk">✓</span>
+      </div>
 
     </div>
 
     <!-- Cards -->
     <div class="eh-cards">
 
-      <!-- Card 1: Self-Guided -->
-      <div class="eh-card-wrap">
+      <!-- Card 1: violet (fix 5) -->
+      <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-1">
         <span class="eh-card-badge">Self-Guided</span>
         <div class="eh-card-inner">
           <h3 class="eh-card__title">Assess the fit</h3>
@@ -417,8 +458,8 @@
         </div>
       </div>
 
-      <!-- Card 2: Specialist-Led -->
-      <div class="eh-card-wrap eh-card-wrap--specialist">
+      <!-- Card 2: violet -->
+      <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-2">
         <span class="eh-card-badge">Specialist-Led</span>
         <div class="eh-card-inner">
           <h3 class="eh-card__title">Guided setup</h3>
@@ -426,8 +467,8 @@
         </div>
       </div>
 
-      <!-- Card 3: Specialist-Led -->
-      <div class="eh-card-wrap eh-card-wrap--specialist">
+      <!-- Card 3: violet -->
+      <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-3">
         <span class="eh-card-badge">Specialist-Led</span>
         <div class="eh-card-inner">
           <h3 class="eh-card__title">Launch with confidence</h3>
@@ -435,8 +476,8 @@
         </div>
       </div>
 
-      <!-- Card 4: Self-Guided -->
-      <div class="eh-card-wrap">
+      <!-- Card 4: green (fix 6) -->
+      <div class="eh-card-wrap eh-card-wrap--green eh-card-anim-4">
         <span class="eh-card-badge">Self-Guided</span>
         <div class="eh-card-inner">
           <h3 class="eh-card__title">Ongoing partnership</h3>
@@ -453,6 +494,37 @@
 
   </div>
 </section>
+
+<!--
+  JS: IntersectionObserver only — adds .is-visible to section.
+  All timing, staggering and transitions are CSS-driven.
+-->
+<script>
+  (function () {
+    var section = document.getElementById('eh-section');
+    if (!section) return;
+
+    /* Fallback: if IntersectionObserver not available, activate immediately */
+    if (!('IntersectionObserver' in window)) {
+      section.classList.add('is-visible');
+      return;
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(section);
+  })();
+</script>
 
 </body>
 </html>
