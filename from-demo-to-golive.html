@@ -6,24 +6,21 @@
   <title>From Demo to Go-Live — EH AB Test</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Saiga:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Saiga:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* ─── EH Design Tokens ─────────────────────────────────────────── */
     :root {
-      /* Core */
       --wp--preset--color--black:         #000000;
       --wp--preset--color--white:         #FFFFFF;
       --wp--preset--color--off-black:     #121214;
       --wp--preset--color--off-white:     #FCFBFF;
       --wp--preset--color--dark-grey:     #545454;
-      /* Neutral */
       --wp--preset--color--neutral-800:   #27272A;
       --wp--preset--color--neutral-700:   #3F3F46;
       --wp--preset--color--neutral-500:   #71717A;
       --wp--preset--color--neutral-400:   #A9A9B2;
       --wp--preset--color--neutral-200:   #E4E4E7;
       --wp--preset--color--neutral-100:   #F4F4F5;
-      /* Violet */
       --wp--preset--color--dark-violet:   #280541;
       --wp--preset--color--deep-violet:   #460078;
       --wp--preset--color--violet-500:    #7622D7;
@@ -35,17 +32,10 @@
       --wp--preset--color--light-violet-200: #E6D5FE;
       --wp--preset--color--light-violet-50:  #F9F5FF;
       --wp--preset--color--light-violet-10:  #F2E9FB;
-      /* Neon Green */
-      --wp--preset--color--neon-green-400: #BAFC58;
-      /* Gradients */
       --wp--preset--gradient--white-to-lv-50:
         linear-gradient(180deg, #FFFFFF 0%, #F9F5FF 100%);
-      --wp--preset--gradient--lv-200-to-lv-500:
-        linear-gradient(135deg, #E6D5FE 0%, #9A58FC 100%);
-      /* Font families */
       --wp--preset--font-family--heading: 'Saiga', serif;
       --wp--preset--font-family--default: 'DM Sans', sans-serif;
-      /* Font sizes */
       --wp--preset--font-size--xs:  0.75rem;
       --wp--preset--font-size--sm:  0.875rem;
       --wp--preset--font-size--md:  1rem;
@@ -54,7 +44,6 @@
       --wp--preset--font-size--2-xl: 1.75rem;
       --wp--preset--font-size--3-xl: 2.25rem;
       --wp--preset--font-size--4-xl: 2.625rem;
-      /* Spacing */
       --wp--preset--spacing--1:  0.25rem;
       --wp--preset--spacing--2:  0.5rem;
       --wp--preset--spacing--3:  0.75rem;
@@ -115,7 +104,10 @@
     /* ─── Timeline ──────────────────────────────────────────────────── */
     /*
       7-column grid: [step] [conn] [step] [conn] [step] [conn] [step]
-      2 rows:        labels (auto height), circles (fixed)
+      2 rows: labels (row 1), circles (row 2)
+
+      FIX: Labels are <div> and connectors are <span> so nth-of-type
+      selects the correct elements independently.
     */
     .eh-timeline {
       display: grid;
@@ -126,7 +118,7 @@
       margin: 0 auto var(--wp--preset--spacing--10);
     }
 
-    /* Labels — row 1 */
+    /* Labels — row 1, use <div> so nth-of-type is isolated */
     .eh-tl-label {
       grid-row: 1;
       font-family: var(--wp--preset--font-family--default);
@@ -143,7 +135,13 @@
       color: var(--wp--preset--color--violet-500);
     }
 
-    /* Circles — row 2 */
+    /* Explicit column placement for labels */
+    .eh-tl-label:nth-of-type(1) { grid-column: 1; }
+    .eh-tl-label:nth-of-type(2) { grid-column: 3; }
+    .eh-tl-label:nth-of-type(3) { grid-column: 5; }
+    .eh-tl-label:nth-of-type(4) { grid-column: 7; }
+
+    /* Circles — row 2, use <button> or <div>, separate from labels */
     .eh-tl-circle {
       grid-row: 2;
       width: 2.75rem;
@@ -168,7 +166,13 @@
       color: var(--wp--preset--color--violet-500);
     }
 
-    /* Connectors — row 2, spans between circles */
+    /* Explicit column placement for circles */
+    .eh-tl-circle:nth-of-type(1) { grid-column: 1; }
+    .eh-tl-circle:nth-of-type(2) { grid-column: 3; }
+    .eh-tl-circle:nth-of-type(3) { grid-column: 5; }
+    .eh-tl-circle:nth-of-type(4) { grid-column: 7; }
+
+    /* Connectors — row 2, <span> elements */
     .eh-tl-conn {
       grid-row: 2;
       height: 2px;
@@ -181,7 +185,6 @@
       background: var(--wp--preset--color--violet-500);
     }
 
-    /* Arrowhead at the right end of each connector */
     .eh-tl-conn::after {
       content: '';
       position: absolute;
@@ -199,24 +202,10 @@
       border-left-color: var(--wp--preset--color--violet-500);
     }
 
-    /* Grid column placement */
-    .eh-tl-label:nth-of-type(1),
-    .eh-tl-circle:nth-of-type(1) { grid-column: 1; }
-
-    .eh-tl-conn:nth-of-type(1)   { grid-column: 2; }
-
-    .eh-tl-label:nth-of-type(2),
-    .eh-tl-circle:nth-of-type(2) { grid-column: 3; }
-
-    .eh-tl-conn:nth-of-type(2)   { grid-column: 4; }
-
-    .eh-tl-label:nth-of-type(3),
-    .eh-tl-circle:nth-of-type(3) { grid-column: 5; }
-
-    .eh-tl-conn:nth-of-type(3)   { grid-column: 6; }
-
-    .eh-tl-label:nth-of-type(4),
-    .eh-tl-circle:nth-of-type(4) { grid-column: 7; }
+    /* Explicit column placement for connectors */
+    .eh-tl-conn:nth-of-type(1) { grid-column: 2; }
+    .eh-tl-conn:nth-of-type(2) { grid-column: 4; }
+    .eh-tl-conn:nth-of-type(3) { grid-column: 6; }
 
     /* ─── Cards grid ────────────────────────────────────────────────── */
     .eh-cards {
@@ -227,23 +216,31 @@
       text-align: left;
     }
 
-    .eh-card {
-      background: var(--wp--preset--color--white);
+    /*
+      TWO-LAYER CARD STRUCTURE
+      ─────────────────────────
+      .eh-card-wrap  = outer "back" layer — neutral bg, peeks out at top
+                       showing the badge. Has border (grey or violet).
+      .eh-card-inner = white foreground card — title + description.
+                       Sits inside the outer wrap, pushed down from badge.
+    */
+    .eh-card-wrap {
       border-radius: 1rem;
-      padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--6);
+      background: var(--wp--preset--color--neutral-100);
       border: 1.5px solid var(--wp--preset--color--neutral-200);
       display: flex;
       flex-direction: column;
-      gap: var(--wp--preset--spacing--3);
+      overflow: hidden; /* keeps inner card corners clean at bottom */
     }
 
-    /* Gradient border for specialist cards via pseudo-element */
-    .eh-card--specialist {
+    /* Specialist variant: gradient border via wrapper with pseudo-element */
+    .eh-card-wrap--specialist {
+      background: var(--wp--preset--color--light-violet-50);
       border: none;
       position: relative;
     }
 
-    .eh-card--specialist::before {
+    .eh-card-wrap--specialist::before {
       content: '';
       position: absolute;
       inset: 0;
@@ -261,25 +258,51 @@
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events: none;
+      z-index: 0;
     }
 
-    .eh-card__badge {
+    /* Badge row — top section of the outer card, badge centred */
+    .eh-card-badge {
+      padding: 0.75rem 1.5rem 0.65rem;
+      text-align: center;
       font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--xs);
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--wp--preset--color--neutral-400);
+      position: relative;
+      z-index: 1;
     }
 
-    .eh-card--specialist .eh-card__badge {
+    .eh-card-wrap--specialist .eh-card-badge {
       color: var(--wp--preset--color--violet-500);
     }
 
+    /* Inner white card — sits below the badge, overlapping the outer slightly */
+    .eh-card-inner {
+      background: var(--wp--preset--color--white);
+      border-radius: 0.875rem;
+      border: 1.5px solid var(--wp--preset--color--neutral-200);
+      padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp--preset--spacing--3);
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      /* Negative top margin pulls card up over the outer back layer */
+      margin: -0.5rem 0.5rem 0.5rem 0.5rem;
+    }
+
+    .eh-card-wrap--specialist .eh-card-inner {
+      border-color: var(--wp--preset--color--light-violet-200);
+    }
+
     .eh-card__title {
-      font-family: var(--wp--preset--font-family--heading);
+      font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--2-xl);
-      font-weight: 600;
+      font-weight: 700;
       color: var(--wp--preset--color--off-black);
       line-height: 1.2;
     }
@@ -304,7 +327,7 @@
       font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--md);
       font-weight: 600;
-      padding: 14px 24px;
+      padding: 14px 28px;
       border-radius: 2rem;
       border: 2px solid var(--wp--preset--color--violet-500);
       text-decoration: none;
@@ -328,7 +351,6 @@
       .eh-timeline {
         display: none;
       }
-
       .eh-cards {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--wp--preset--spacing--4);
@@ -350,19 +372,32 @@
     <h2 class="eh-section__heading">From demo to go-live.</h2>
     <p class="eh-section__sub">This doesn't stop at the demo. We're with you for the long term.</p>
 
-    <!-- Timeline -->
+    <!--
+      TIMELINE FIX
+      ─────────────
+      Labels are <div class="eh-tl-label"> (nth-of-type counts only divs)
+      Circles are <div class="eh-tl-circle"> — same type as labels BUT
+        placed in a separate parent so nth-of-type resets correctly.
+      Connectors are <span class="eh-tl-conn"> (nth-of-type counts only spans)
+
+      Correct order per design: DEMO → IMPLEMENTATION → FIRST PAY RUN → GROWTH
+      Active steps: 2 (Implementation) and 3 (First Pay Run)
+      Active connectors: 1→2, 2→3
+    -->
     <div class="eh-timeline" role="list" aria-label="Onboarding stages">
 
-      <!-- Labels (row 1) -->
-      <span class="eh-tl-label">Demo</span>
-      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
-      <span class="eh-tl-label eh-tl-label--active">Implementation</span>
-      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
-      <span class="eh-tl-label eh-tl-label--active">First Pay Run</span>
-      <span class="eh-tl-conn" aria-hidden="true"></span>
-      <span class="eh-tl-label">Growth</span>
+      <!-- Labels row 1 -->
+      <div class="eh-tl-label">Demo</div>
+      <div class="eh-tl-label eh-tl-label--active">Implementation</div>
+      <div class="eh-tl-label eh-tl-label--active">First Pay Run</div>
+      <div class="eh-tl-label">Growth</div>
 
-      <!-- Circles (row 2) -->
+      <!-- Connectors row 2 -->
+      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
+      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
+      <span class="eh-tl-conn" aria-hidden="true"></span>
+
+      <!-- Circles row 2 -->
       <div class="eh-tl-circle">1</div>
       <div class="eh-tl-circle eh-tl-circle--active">2</div>
       <div class="eh-tl-circle eh-tl-circle--active">3</div>
@@ -373,28 +408,40 @@
     <!-- Cards -->
     <div class="eh-cards">
 
-      <div class="eh-card">
-        <span class="eh-card__badge">Self-Guided</span>
-        <h3 class="eh-card__title">Assess the fit</h3>
-        <p class="eh-card__desc">We'll help you assess if Employment Hero Payroll is right for your business.</p>
+      <!-- Card 1: Self-Guided -->
+      <div class="eh-card-wrap">
+        <span class="eh-card-badge">Self-Guided</span>
+        <div class="eh-card-inner">
+          <h3 class="eh-card__title">Assess the fit</h3>
+          <p class="eh-card__desc">We'll help you assess if Employment Hero Payroll is right for your business.</p>
+        </div>
       </div>
 
-      <div class="eh-card eh-card--specialist">
-        <span class="eh-card__badge">Specialist-Led</span>
-        <h3 class="eh-card__title">Guided setup</h3>
-        <p class="eh-card__desc">Lean on best-in-class set-up support at every step.</p>
+      <!-- Card 2: Specialist-Led -->
+      <div class="eh-card-wrap eh-card-wrap--specialist">
+        <span class="eh-card-badge">Specialist-Led</span>
+        <div class="eh-card-inner">
+          <h3 class="eh-card__title">Guided setup</h3>
+          <p class="eh-card__desc">Lean on best-in-class set-up support at every step.</p>
+        </div>
       </div>
 
-      <div class="eh-card eh-card--specialist">
-        <span class="eh-card__badge">Specialist-Led</span>
-        <h3 class="eh-card__title">Launch with confidence</h3>
-        <p class="eh-card__desc">Feel right at home with everything configured.</p>
+      <!-- Card 3: Specialist-Led -->
+      <div class="eh-card-wrap eh-card-wrap--specialist">
+        <span class="eh-card-badge">Specialist-Led</span>
+        <div class="eh-card-inner">
+          <h3 class="eh-card__title">Launch with confidence</h3>
+          <p class="eh-card__desc">Feel right at home with everything configured.</p>
+        </div>
       </div>
 
-      <div class="eh-card">
-        <span class="eh-card__badge">Self-Guided</span>
-        <h3 class="eh-card__title">Ongoing partnership</h3>
-        <p class="eh-card__desc">Over-perform as your business evolves.</p>
+      <!-- Card 4: Self-Guided -->
+      <div class="eh-card-wrap">
+        <span class="eh-card-badge">Self-Guided</span>
+        <div class="eh-card-inner">
+          <h3 class="eh-card__title">Ongoing partnership</h3>
+          <p class="eh-card__desc">Over-perform as your business evolves.</p>
+        </div>
       </div>
 
     </div>
