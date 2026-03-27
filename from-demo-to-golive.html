@@ -68,10 +68,14 @@
     }
 
     /* ─── Section ───────────────────────────────────────────────────── */
+    /* Mirrors WP alignfull: cancels the page's global padding so the
+       section background spans edge-to-edge inside its container */
     .eh-section {
       background: var(--wp--preset--gradient--white-to-lv-50);
       padding: 3.5rem var(--wp--preset--spacing--6);
       text-align: center;
+      margin-left:  calc(var(--wp--style--root--padding-left)  * -1);
+      margin-right: calc(var(--wp--style--root--padding-right) * -1);
     }
 
     .eh-section__inner {
