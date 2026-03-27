@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Demo to Go-Live — EH AB Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Saiga:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── EH Design Tokens ─────────────────────────────────────────── */
+    :root {
+      /* Core */
+      --wp--preset--color--black:         #000000;
+      --wp--preset--color--white:         #FFFFFF;
+      --wp--preset--color--off-black:     #121214;
+      --wp--preset--color--off-white:     #FCFBFF;
+      --wp--preset--color--dark-grey:     #545454;
+      /* Neutral */
+      --wp--preset--color--neutral-800:   #27272A;
+      --wp--preset--color--neutral-700:   #3F3F46;
+      --wp--preset--color--neutral-500:   #71717A;
+      --wp--preset--color--neutral-400:   #A9A9B2;
+      --wp--preset--color--neutral-200:   #E4E4E7;
+      --wp--preset--color--neutral-100:   #F4F4F5;
+      /* Violet */
+      --wp--preset--color--dark-violet:   #280541;
+      --wp--preset--color--deep-violet:   #460078;
+      --wp--preset--color--violet-500:    #7622D7;
+      --wp--preset--color--primary-violet:#A569FF;
+      --wp--preset--color--violet-400:    #BB91EB;
+      --wp--preset--color--light-violet-500: #9A58FC;
+      --wp--preset--color--light-violet-400: #B382FD;
+      --wp--preset--color--light-violet-300: #CDACFE;
+      --wp--preset--color--light-violet-200: #E6D5FE;
+      --wp--preset--color--light-violet-50:  #F9F5FF;
+      --wp--preset--color--light-violet-10:  #F2E9FB;
+      /* Neon Green */
+      --wp--preset--color--neon-green-400: #BAFC58;
+      /* Gradients */
+      --wp--preset--gradient--white-to-lv-50:
+        linear-gradient(180deg, #FFFFFF 0%, #F9F5FF 100%);
+      --wp--preset--gradient--lv-200-to-lv-500:
+        linear-gradient(135deg, #E6D5FE 0%, #9A58FC 100%);
+      /* Font families */
+      --wp--preset--font-family--heading: 'Saiga', serif;
+      --wp--preset--font-family--default: 'DM Sans', sans-serif;
+      /* Font sizes */
+      --wp--preset--font-size--xs:  0.75rem;
+      --wp--preset--font-size--sm:  0.875rem;
+      --wp--preset--font-size--md:  1rem;
+      --wp--preset--font-size--lg:  1.125rem;
+      --wp--preset--font-size--xl:  1.5rem;
+      --wp--preset--font-size--2-xl: 1.75rem;
+      --wp--preset--font-size--3-xl: 2.25rem;
+      --wp--preset--font-size--4-xl: 2.625rem;
+      /* Spacing */
+      --wp--preset--spacing--1:  0.25rem;
+      --wp--preset--spacing--2:  0.5rem;
+      --wp--preset--spacing--3:  0.75rem;
+      --wp--preset--spacing--4:  1rem;
+      --wp--preset--spacing--5:  1.25rem;
+      --wp--preset--spacing--6:  1.5rem;
+      --wp--preset--spacing--8:  2rem;
+      --wp--preset--spacing--10: 2.5rem;
+      --wp--preset--spacing--12: 3rem;
+      --wp--preset--spacing--16: 4rem;
+      --wp--preset--spacing--20: 5rem;
+      --wp--preset--spacing--24: 6rem;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--wp--preset--font-family--default);
+      background: var(--wp--preset--color--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Section ───────────────────────────────────────────────────── */
+    .eh-section {
+      background: var(--wp--preset--gradient--white-to-lv-50);
+      padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--6);
+      text-align: center;
+    }
+
+    .eh-section__inner {
+      max-width: 81.25rem;
+      margin: 0 auto;
+    }
+
+    /* ─── Heading ───────────────────────────────────────────────────── */
+    .eh-section__heading {
+      font-family: var(--wp--preset--font-family--heading);
+      font-size: clamp(2.25rem, 5vw, 4rem);
+      font-weight: 600;
+      color: var(--wp--preset--color--off-black);
+      line-height: 1.1;
+      margin-bottom: var(--wp--preset--spacing--4);
+    }
+
+    .eh-section__sub {
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--lg);
+      color: var(--wp--preset--color--neutral-500);
+      font-weight: 400;
+      line-height: 1.55;
+      margin-bottom: var(--wp--preset--spacing--16);
+    }
+
+    /* ─── Timeline ──────────────────────────────────────────────────── */
+    /*
+      7-column grid: [step] [conn] [step] [conn] [step] [conn] [step]
+      2 rows:        labels (auto height), circles (fixed)
+    */
+    .eh-timeline {
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr auto 1fr auto;
+      grid-template-rows: auto 2.75rem;
+      align-items: center;
+      max-width: 52rem;
+      margin: 0 auto var(--wp--preset--spacing--10);
+    }
+
+    /* Labels — row 1 */
+    .eh-tl-label {
+      grid-row: 1;
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--xs);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--wp--preset--color--neutral-400);
+      text-align: center;
+      padding-bottom: var(--wp--preset--spacing--2);
+    }
+
+    .eh-tl-label--active {
+      color: var(--wp--preset--color--violet-500);
+    }
+
+    /* Circles — row 2 */
+    .eh-tl-circle {
+      grid-row: 2;
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      border: 2px solid var(--wp--preset--color--neutral-200);
+      background: var(--wp--preset--color--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--md);
+      font-weight: 600;
+      color: var(--wp--preset--color--neutral-400);
+      justify-self: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eh-tl-circle--active {
+      border-color: var(--wp--preset--color--violet-500);
+      color: var(--wp--preset--color--violet-500);
+    }
+
+    /* Connectors — row 2, spans between circles */
+    .eh-tl-conn {
+      grid-row: 2;
+      height: 2px;
+      background: var(--wp--preset--color--neutral-200);
+      position: relative;
+      align-self: center;
+    }
+
+    .eh-tl-conn--active {
+      background: var(--wp--preset--color--violet-500);
+    }
+
+    /* Arrowhead at the right end of each connector */
+    .eh-tl-conn::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top:    5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left:   7px solid var(--wp--preset--color--neutral-200);
+    }
+
+    .eh-tl-conn--active::after {
+      border-left-color: var(--wp--preset--color--violet-500);
+    }
+
+    /* Grid column placement */
+    .eh-tl-label:nth-of-type(1),
+    .eh-tl-circle:nth-of-type(1) { grid-column: 1; }
+
+    .eh-tl-conn:nth-of-type(1)   { grid-column: 2; }
+
+    .eh-tl-label:nth-of-type(2),
+    .eh-tl-circle:nth-of-type(2) { grid-column: 3; }
+
+    .eh-tl-conn:nth-of-type(2)   { grid-column: 4; }
+
+    .eh-tl-label:nth-of-type(3),
+    .eh-tl-circle:nth-of-type(3) { grid-column: 5; }
+
+    .eh-tl-conn:nth-of-type(3)   { grid-column: 6; }
+
+    .eh-tl-label:nth-of-type(4),
+    .eh-tl-circle:nth-of-type(4) { grid-column: 7; }
+
+    /* ─── Cards grid ────────────────────────────────────────────────── */
+    .eh-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--wp--preset--spacing--6);
+      margin-bottom: var(--wp--preset--spacing--12);
+      text-align: left;
+    }
+
+    .eh-card {
+      background: var(--wp--preset--color--white);
+      border-radius: 1rem;
+      padding: var(--wp--preset--spacing--8) var(--wp--preset--spacing--6);
+      border: 1.5px solid var(--wp--preset--color--neutral-200);
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp--preset--spacing--3);
+    }
+
+    /* Gradient border for specialist cards via pseudo-element */
+    .eh-card--specialist {
+      border: none;
+      position: relative;
+    }
+
+    .eh-card--specialist::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      padding: 1.5px;
+      background: linear-gradient(
+        160deg,
+        var(--wp--preset--color--violet-500) 0%,
+        var(--wp--preset--color--light-violet-300) 50%,
+        var(--wp--preset--color--primary-violet) 100%
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .eh-card__badge {
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--xs);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--wp--preset--color--neutral-400);
+    }
+
+    .eh-card--specialist .eh-card__badge {
+      color: var(--wp--preset--color--violet-500);
+    }
+
+    .eh-card__title {
+      font-family: var(--wp--preset--font-family--heading);
+      font-size: var(--wp--preset--font-size--2-xl);
+      font-weight: 600;
+      color: var(--wp--preset--color--off-black);
+      line-height: 1.2;
+    }
+
+    .eh-card__desc {
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--md);
+      font-weight: 400;
+      color: var(--wp--preset--color--neutral-500);
+      line-height: 1.55;
+    }
+
+    /* ─── CTA ───────────────────────────────────────────────────────── */
+    .eh-cta {
+      margin-top: var(--wp--preset--spacing--4);
+    }
+
+    .eh-btn {
+      display: inline-block;
+      background: var(--wp--preset--color--violet-500);
+      color: var(--wp--preset--color--white);
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--md);
+      font-weight: 600;
+      padding: 14px 24px;
+      border-radius: 2rem;
+      border: 2px solid var(--wp--preset--color--violet-500);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .eh-btn:hover {
+      background: var(--wp--preset--color--deep-violet);
+      border-color: var(--wp--preset--color--deep-violet);
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .eh-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .eh-timeline {
+        display: none;
+      }
+
+      .eh-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--wp--preset--spacing--4);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .eh-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section class="eh-section">
+  <div class="eh-section__inner">
+
+    <h2 class="eh-section__heading">From demo to go-live.</h2>
+    <p class="eh-section__sub">This doesn't stop at the demo. We're with you for the long term.</p>
+
+    <!-- Timeline -->
+    <div class="eh-timeline" role="list" aria-label="Onboarding stages">
+
+      <!-- Labels (row 1) -->
+      <span class="eh-tl-label">Demo</span>
+      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
+      <span class="eh-tl-label eh-tl-label--active">Implementation</span>
+      <span class="eh-tl-conn eh-tl-conn--active" aria-hidden="true"></span>
+      <span class="eh-tl-label eh-tl-label--active">First Pay Run</span>
+      <span class="eh-tl-conn" aria-hidden="true"></span>
+      <span class="eh-tl-label">Growth</span>
+
+      <!-- Circles (row 2) -->
+      <div class="eh-tl-circle">1</div>
+      <div class="eh-tl-circle eh-tl-circle--active">2</div>
+      <div class="eh-tl-circle eh-tl-circle--active">3</div>
+      <div class="eh-tl-circle">4</div>
+
+    </div>
+
+    <!-- Cards -->
+    <div class="eh-cards">
+
+      <div class="eh-card">
+        <span class="eh-card__badge">Self-Guided</span>
+        <h3 class="eh-card__title">Assess the fit</h3>
+        <p class="eh-card__desc">We'll help you assess if Employment Hero Payroll is right for your business.</p>
+      </div>
+
+      <div class="eh-card eh-card--specialist">
+        <span class="eh-card__badge">Specialist-Led</span>
+        <h3 class="eh-card__title">Guided setup</h3>
+        <p class="eh-card__desc">Lean on best-in-class set-up support at every step.</p>
+      </div>
+
+      <div class="eh-card eh-card--specialist">
+        <span class="eh-card__badge">Specialist-Led</span>
+        <h3 class="eh-card__title">Launch with confidence</h3>
+        <p class="eh-card__desc">Feel right at home with everything configured.</p>
+      </div>
+
+      <div class="eh-card">
+        <span class="eh-card__badge">Self-Guided</span>
+        <h3 class="eh-card__title">Ongoing partnership</h3>
+        <p class="eh-card__desc">Over-perform as your business evolves.</p>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="eh-cta">
+      <a href="https://employmenthero.com/request-a-demo/" class="eh-btn">Book a demo</a>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
