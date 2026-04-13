@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Demo to Go-Live v2 — EH AB Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=Saiga:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── EH Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --wp--preset--color--white:            #FFFFFF;
+      --wp--preset--color--off-black:        #121214;
+      --wp--preset--color--dark-violet:      #280541;
+      --wp--preset--color--deep-violet:      #460078;
+      --wp--preset--color--violet-500:       #7622D7;
+      --wp--preset--color--primary-violet:   #A569FF;
+      --wp--preset--color--violet-400:       #BB91EB;
+      --wp--preset--color--light-violet-50:  #F9F5FF;
+      --wp--preset--color--neon-green-400:   #BAFC58;
+      --wp--preset--color--neon-green-800:   #4F8203;
+      --wp--preset--font-family--heading: 'Saiga', serif;
+      --wp--preset--font-family--default: 'DM Sans', sans-serif;
+      --wp--preset--font-size--xs:  0.75rem;
+      --wp--preset--font-size--sm:  0.875rem;
+      --wp--preset--font-size--md:  1rem;
+      --wp--preset--spacing--4:  1rem;
+      --wp--preset--spacing--6:  1.5rem;
+      --wp--preset--spacing--8:  2rem;
+      --wp--preset--spacing--10: 2.5rem;
+      --wp--preset--spacing--12: 3rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--wp--preset--font-family--default);
+      background: var(--wp--preset--color--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Section ───────────────────────────────────────────────────── */
+    .ehv2-section {
+      background: linear-gradient(155deg, #1c0535 0%, #0a0115 100%);
+      padding: 4rem var(--wp--preset--spacing--6) 4.5rem;
+      text-align: center;
+    }
+
+    .ehv2-inner {
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+
+    /* ─── Heading ───────────────────────────────────────────────────── */
+    .ehv2-heading {
+      font-family: var(--wp--preset--font-family--heading);
+      font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+      font-weight: 600;
+      color: var(--wp--preset--color--white);
+      line-height: 1.15;
+      margin-bottom: var(--wp--preset--spacing--4);
+    }
+
+    .ehv2-sub {
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--md);
+      color: var(--wp--preset--color--violet-400);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 48ch;
+      margin: 0 auto var(--wp--preset--spacing--10);
+      opacity: 0.85;
+    }
+
+    /* ─── Steps container ───────────────────────────────────────────── */
+    .ehv2-container {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(165, 105, 255, 0.22);
+      border-radius: 1.25rem;
+      padding: 2.25rem 2.5rem 2.5rem;
+      margin-bottom: var(--wp--preset--spacing--10);
+    }
+
+    /*
+      7-column grid:
+        [icon] [connector] [icon] [connector] [icon] [connector] [icon]
+      Row 1 = icon circles (4rem tall) + connectors (aligned to circle centre)
+      Row 2 = step name, description, duration (text block per step column)
+    */
+    .ehv2-steps {
+      display: grid;
+      grid-template-columns: 1fr 4rem 1fr 4rem 1fr 4rem 1fr;
+      grid-template-rows: 4rem auto;
+    }
+
+    /* ── Icon circles (row 1) ── */
+    .ehv2-icon {
+      grid-row: 1;
+      justify-self: center;
+      align-self: center;
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: rgba(118, 34, 215, 0.15);
+      border: 1.5px solid rgba(165, 105, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      transition:
+        background   0.35s ease var(--ic-delay, 0s),
+        border-color 0.35s ease var(--ic-delay, 0s);
+    }
+
+    .ehv2-icon img {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+      display: block;
+    }
+
+    .ehv2-icon-1 { grid-column: 1; --ic-delay: 0s;    }
+    .ehv2-icon-2 { grid-column: 3; --ic-delay: 0.55s; }
+    .ehv2-icon-3 { grid-column: 5; --ic-delay: 1.1s;  }
+    .ehv2-icon-4 { grid-column: 7; --ic-delay: 1.65s; }
+
+    /* Steps 1–3 → violet glow on hover */
+    .ehv2-section:is(:hover, .is-visible) .ehv2-icon-1,
+    .ehv2-section:is(:hover, .is-visible) .ehv2-icon-2,
+    .ehv2-section:is(:hover, .is-visible) .ehv2-icon-3 {
+      background:   rgba(118, 34, 215, 0.28);
+      border-color: rgba(165, 105, 255, 0.75);
+    }
+
+    /* Step 4 → green glow on hover */
+    .ehv2-section:is(:hover, .is-visible) .ehv2-icon-4 {
+      background:   rgba(186, 252, 88, 0.12);
+      border-color: var(--wp--preset--color--neon-green-400);
+    }
+
+    /* ── Connectors (row 1) ── */
+    .ehv2-conn {
+      grid-row: 1;
+      align-self: center;
+      height: 1px;
+      background: rgba(165, 105, 255, 0.18);
+      position: relative;
+    }
+
+    .ehv2-conn-1 { grid-column: 2; --cn-delay: 0s;    }
+    .ehv2-conn-2 { grid-column: 4; --cn-delay: 0.55s; }
+    .ehv2-conn-3 { grid-column: 6; --cn-delay: 1.1s;  }
+
+    /* Left-to-right violet fill on hover */
+    .ehv2-conn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 1px;
+      background: var(--wp--preset--color--primary-violet);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease var(--cn-delay, 0s);
+    }
+
+    .ehv2-section:is(:hover, .is-visible) .ehv2-conn::before {
+      transform: scaleX(1);
+    }
+
+    /* ── Step text (row 2) ── */
+    .ehv2-text {
+      grid-row: 2;
+      padding-top: 1.125rem;
+      text-align: center;
+    }
+
+    .ehv2-text-1 { grid-column: 1; }
+    .ehv2-text-2 { grid-column: 3; }
+    .ehv2-text-3 { grid-column: 5; }
+    .ehv2-text-4 { grid-column: 7; }
+
+    .ehv2-text__name {
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--sm);
+      font-weight: 700;
+      color: var(--wp--preset--color--white);
+      margin-bottom: 0.375rem;
+    }
+
+    .ehv2-text__desc {
+      font-family: var(--wp--preset--font-family--default);
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.5;
+      margin-bottom: 0.625rem;
+    }
+
+    .ehv2-text__time {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--xs);
+      font-weight: 500;
+      color: rgba(165, 105, 255, 0.75);
+    }
+
+    /* ─── CTA ───────────────────────────────────────────────────────── */
+    .ehv2-cta { margin-top: var(--wp--preset--spacing--4); }
+
+    .ehv2-btn {
+      display: inline-block;
+      background: var(--wp--preset--color--primary-violet);
+      color: var(--wp--preset--color--white);
+      font-family: var(--wp--preset--font-family--default);
+      font-size: var(--wp--preset--font-size--md);
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 2rem;
+      border: 2px solid var(--wp--preset--color--primary-violet);
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .ehv2-btn:hover {
+      background:   var(--wp--preset--color--violet-500);
+      border-color: var(--wp--preset--color--violet-500);
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .ehv2-container { padding: 1.5rem 1.25rem 2rem; }
+
+      /*
+        Reflow to 2-column: icons in rows 1 & 3, text in rows 2 & 4.
+        Each step's icon + text stays paired in the same column.
+        Connectors hidden.
+      */
+      .ehv2-steps {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto auto;
+        row-gap: 0.375rem;
+        column-gap: 1rem;
+      }
+
+      .ehv2-conn { display: none; }
+
+      .ehv2-icon-1 { grid-column: 1; grid-row: 1; }
+      .ehv2-icon-2 { grid-column: 2; grid-row: 1; }
+      .ehv2-icon-3 { grid-column: 1; grid-row: 3; }
+      .ehv2-icon-4 { grid-column: 2; grid-row: 3; }
+
+      .ehv2-text-1 { grid-column: 1; grid-row: 2; padding-top: 0.625rem; padding-bottom: 1.5rem; }
+      .ehv2-text-2 { grid-column: 2; grid-row: 2; padding-top: 0.625rem; padding-bottom: 1.5rem; }
+      .ehv2-text-3 { grid-column: 1; grid-row: 4; padding-top: 0.625rem; }
+      .ehv2-text-4 { grid-column: 2; grid-row: 4; padding-top: 0.625rem; }
+    }
+
+    @media (max-width: 480px) {
+      .ehv2-steps {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        row-gap: 0;
+      }
+      .ehv2-icon-1, .ehv2-icon-2, .ehv2-icon-3, .ehv2-icon-4 { grid-column: 1; grid-row: auto; }
+      .ehv2-text-1, .ehv2-text-2, .ehv2-text-3, .ehv2-text-4 { grid-column: 1; grid-row: auto; padding-bottom: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<section class="ehv2-section alignfull" id="ehv2-section">
+  <div class="ehv2-inner">
+
+    <h2 class="ehv2-heading">From demo to go-live.<br>With a team in your corner.</h2>
+    <p class="ehv2-sub">Going live doesn't have to mean flying blind. With a dedicated expert at every step, every configuration is confirmed and every question answered before day one.</p>
+
+    <div class="ehv2-container">
+      <div class="ehv2-steps" role="list" aria-label="Onboarding stages">
+
+        <!-- Row 1: icon circles + connectors -->
+        <div class="ehv2-icon ehv2-icon-1" role="listitem" aria-label="Step 1: Evaluation">
+          <img src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-1.png" width="32" height="32" alt="" loading="lazy">
+        </div>
+        <div class="ehv2-conn ehv2-conn-1" aria-hidden="true"></div>
+        <div class="ehv2-icon ehv2-icon-2" role="listitem" aria-label="Step 2: HR Setup">
+          <img src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-2.png" width="32" height="32" alt="" loading="lazy">
+        </div>
+        <div class="ehv2-conn ehv2-conn-2" aria-hidden="true"></div>
+        <div class="ehv2-icon ehv2-icon-3" role="listitem" aria-label="Step 3: Payroll Setup">
+          <img src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-3.png" width="32" height="32" alt="" loading="lazy">
+        </div>
+        <div class="ehv2-conn ehv2-conn-3" aria-hidden="true"></div>
+        <div class="ehv2-icon ehv2-icon-4" role="listitem" aria-label="Step 4: Go Live">
+          <img src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-4.png" width="32" height="32" alt="" loading="lazy">
+        </div>
+
+        <!-- Row 2: step text -->
+        <div class="ehv2-text ehv2-text-1">
+          <div class="ehv2-text__name">Evaluation</div>
+          <div class="ehv2-text__desc">Compare providers &rarr; Run demos &rarr; Get sign-off</div>
+          <div class="ehv2-text__time">
+            <svg width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="6.5" cy="9" r="4.5"/><path d="M5 1.5h3M6.5 1.5V4"/><path d="M6.5 6.5V9"/></svg>
+            20–40 days
+          </div>
+        </div>
+
+        <div class="ehv2-text ehv2-text-2">
+          <div class="ehv2-text__name">HR Setup</div>
+          <div class="ehv2-text__desc">Import employee data &rarr; Configure settings &amp; policies &rarr; Train admins</div>
+          <div class="ehv2-text__time">
+            <svg width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="6.5" cy="9" r="4.5"/><path d="M5 1.5h3M6.5 1.5V4"/><path d="M6.5 6.5V9"/></svg>
+            10–30 days
+          </div>
+        </div>
+
+        <div class="ehv2-text ehv2-text-3">
+          <div class="ehv2-text__name">Payroll Setup</div>
+          <div class="ehv2-text__desc">Setup payroll schedule &amp; settings &rarr; Import YTDs &rarr; Train admins</div>
+          <div class="ehv2-text__time">
+            <svg width="13" height="14" viewBox="0 0 13 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="6.5" cy="9" r="4.5"/><path d="M5 1.5h3M6.5 1.5V4"/><path d="M6.5 6.5V9"/></svg>
+            15–30 days
+          </div>
+        </div>
+
+        <div class="ehv2-text ehv2-text-4">
+          <div class="ehv2-text__name">Go Live</div>
+          <div class="ehv2-text__desc">Process your first seamless payroll</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ehv2-cta">
+      <a href="https://employmenthero.com/en-ca/hr-software-lp/#form" class="ehv2-btn">Book a demo</a>
+    </div>
+
+  </div>
+</section>
+
+<!--
+  JS fallback for touch devices where :hover doesn't fire.
+  Toggles .is-visible on tap. Desktop uses CSS :hover — no JS needed.
+-->
+<script>
+  (function () {
+    var section = document.getElementById('ehv2-section');
+    if (!section) return;
+    section.addEventListener('touchstart', function () {
+      section.classList.toggle('is-visible');
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>
