@@ -96,7 +96,7 @@
       color: var(--wp--preset--color--neutral-500);
       font-weight: 400;
       line-height: 1.55;
-      margin-bottom: var(--wp--preset--spacing--6);
+      margin-bottom: var(--wp--preset--spacing--16);
     }
 
     /* ─── Timeline ──────────────────────────────────────────────────── */
@@ -134,7 +134,9 @@
     /* ── Labels (row 1) ── */
     .eh-tl-label {
       grid-row: 1;
-      width: 2.25rem;           /* pins auto column to circle width — text overflows centred */
+      width: 2.25rem;
+      white-space: nowrap;
+      overflow: visible;
       font-family: var(--wp--preset--font-family--default);
       font-size: var(--wp--preset--font-size--xs);
       font-weight: 700;
@@ -443,36 +445,20 @@
       .eh-cards { grid-template-columns: 1fr; }
     }
 
-    /* ─── Benefits list ─────────────────────────────────────────────── */
-    .eh-section__benefits {
-      list-style: none;
-      display: inline-flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.3rem;
-      text-align: left;
-      margin-bottom: var(--wp--preset--spacing--16);
-    }
-    .eh-section__benefits li {
+    /* ─── Card footer: duration (bottom-left) + icon (bottom-right) ─── */
+    .eh-card-footer {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--wp--preset--color--neutral-100);
     }
-    .eh-section__benefits li::before {
-      content: '';
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--wp--preset--color--violet-500);
-      flex-shrink: 0;
-      display: block;
-    }
-
-    /* ─── Card icon ─────────────────────────────────────────────────── */
     .eh-card-icon {
-      width: 3rem;
-      height: 3rem;
+      width: 2.5rem;
+      height: 2.5rem;
       object-fit: contain;
       display: block;
+      margin-left: auto;
     }
   </style>
 </head>
@@ -481,13 +467,8 @@
 <section class="eh-section alignfull" id="eh-section">
   <div class="eh-section__inner">
 
-    <h2 class="eh-section__heading">From demo to go-live — with a team in your corner.</h2>
-    <p class="eh-section__sub">Going live shouldn't feel like flying blind. We assign you a dedicated expert, walk every configuration with you, and stay available 24/7 — so you reach go-live confident, not scrambling.</p>
-    <ul class="eh-section__benefits">
-      <li>Dedicated Implementation Associate</li>
-      <li>Personalized 1:1 video sessions and email support</li>
-      <li>24/7 access to our Help Center and AI-powered ChatBot</li>
-    </ul>
+    <h2 class="eh-section__heading">From demo to go-live, with a team in your corner.</h2>
+    <p class="eh-section__sub">Going live shouldn't feel like flying blind. We assign you a dedicated expert, walk every configuration with you, and stay available 24/7, so you reach go-live confident, not scrambling.</p>
 
     <!--
       TIMELINE
@@ -549,9 +530,11 @@
       <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-1">
         <span class="eh-card-badge">No pressure</span>
         <div class="eh-card-inner">
-          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-1.png" width="48" height="48" alt="" loading="lazy">
           <h3 class="eh-card__title">See if it fits</h3>
-          <p class="eh-card__desc">A demo built around your headcount, industry, and hiring goals — not a generic overview.</p>
+          <p class="eh-card__desc">A demo built around your headcount, industry, and hiring goals. Not a generic overview.</p>
+          <div class="eh-card-footer">
+            <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-1.png" width="40" height="40" alt="" loading="lazy">
+          </div>
         </div>
       </div>
 
@@ -559,9 +542,11 @@
       <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-2">
         <span class="eh-card-badge">Step by step</span>
         <div class="eh-card-inner">
-          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-2.png" width="48" height="48" alt="" loading="lazy">
           <h3 class="eh-card__title">Get up and running fast</h3>
-          <p class="eh-card__desc">Built-in setup flows guide every configuration — org structure, leave policies, permissions — nothing left to assumption.</p>
+          <p class="eh-card__desc">Built-in setup flows guide every configuration: org structure, leave policies, permissions. Nothing left to assumption.</p>
+          <div class="eh-card-footer">
+            <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-2.png" width="40" height="40" alt="" loading="lazy">
+          </div>
         </div>
       </div>
 
@@ -569,9 +554,11 @@
       <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-3">
         <span class="eh-card-badge">First day, sorted</span>
         <div class="eh-card-inner">
-          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-3.png" width="48" height="48" alt="" loading="lazy">
           <h3 class="eh-card__title">Onboard your first employee right</h3>
           <p class="eh-card__desc">Smart checklists and automated workflows mean your first employee gets a seamless experience from day one.</p>
+          <div class="eh-card-footer">
+            <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-3.png" width="40" height="40" alt="" loading="lazy">
+          </div>
         </div>
       </div>
 
@@ -579,9 +566,11 @@
       <div class="eh-card-wrap eh-card-wrap--green eh-card-anim-4">
         <span class="eh-card-badge">Always on</span>
         <div class="eh-card-inner">
-          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-4.png" width="48" height="48" alt="" loading="lazy">
           <h3 class="eh-card__title">HR that grows with your team</h3>
-          <p class="eh-card__desc">As your headcount scales, Employment Hero adapts — compliance updates, new entitlements, and policy changes handled automatically.</p>
+          <p class="eh-card__desc">As your headcount scales, Employment Hero adapts: compliance updates, new entitlements, and policy changes handled automatically.</p>
+          <div class="eh-card-footer">
+            <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-4.png" width="40" height="40" alt="" loading="lazy">
+          </div>
         </div>
       </div>
 
