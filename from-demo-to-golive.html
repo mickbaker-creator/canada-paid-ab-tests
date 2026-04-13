@@ -442,6 +442,37 @@
     @media (max-width: 560px) {
       .eh-cards { grid-template-columns: 1fr; }
     }
+
+    /* ─── Benefits list ─────────────────────────────────────────────── */
+    .eh-section__benefits {
+      list-style: none;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+      text-align: left;
+    }
+    .eh-section__benefits li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .eh-section__benefits li::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--wp--preset--color--violet-500);
+      flex-shrink: 0;
+      display: block;
+    }
+
+    /* ─── Card icon ─────────────────────────────────────────────────── */
+    .eh-card-icon {
+      width: 3rem;
+      height: 3rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -449,8 +480,12 @@
 <section class="eh-section alignfull" id="eh-section">
   <div class="eh-section__inner">
 
-    <h2 class="eh-section__heading">From demo to go-live.</h2>
-    <p class="eh-section__sub">This doesn't stop at the demo. We're with you for the long term.</p>
+    <h2 class="eh-section__heading">Your Employment Hero Journey</h2>
+    <ul class="eh-section__sub eh-section__benefits">
+      <li>Dedicated Implementation Associate</li>
+      <li>Personalised 1:1 video sessions and email support</li>
+      <li>24/7 access to our Help Center and AI-powered ChatBot</li>
+    </ul>
 
     <!--
       TIMELINE
@@ -464,10 +499,10 @@
     <div class="eh-timeline" role="list" aria-label="Onboarding stages">
 
       <!-- Row 1: labels -->
-      <div class="eh-tl-label">Demo</div>
-      <div class="eh-tl-label">Implementation</div>
-      <div class="eh-tl-label">First Pay Run</div>
-      <div class="eh-tl-label">Growth</div>
+      <div class="eh-tl-label">Evaluation</div>
+      <div class="eh-tl-label">HR Setup</div>
+      <div class="eh-tl-label">Payroll Setup</div>
+      <div class="eh-tl-label">Go Live</div>
 
       <!-- Row 2: connectors (spans) then circles (divs auto-place) -->
       <!-- (3) polyline chevron centred on each connector segment -->
@@ -487,10 +522,10 @@
         </svg>
       </span>
 
-      <div class="eh-tl-circle eh-tl-c1" aria-label="Step 1: Demo">1</div>
-      <div class="eh-tl-circle eh-tl-c2" aria-label="Step 2: Implementation">2</div>
-      <div class="eh-tl-circle eh-tl-c3" aria-label="Step 3: First Pay Run">3</div>
-      <div class="eh-tl-circle eh-tl-c4" aria-label="Step 4: Growth">
+      <div class="eh-tl-circle eh-tl-c1" aria-label="Step 1: Evaluation">1</div>
+      <div class="eh-tl-circle eh-tl-c2" aria-label="Step 2: HR Setup">2</div>
+      <div class="eh-tl-circle eh-tl-c3" aria-label="Step 3: Payroll Setup">3</div>
+      <div class="eh-tl-circle eh-tl-c4" aria-label="Step 4: Go Live">
         <span class="eh-tl-c4-num" aria-hidden="true">4</span>
         <!-- (5) SVG tick — stroke via currentColor → #3a7d00 when active -->
         <span class="eh-tl-c4-chk">
@@ -510,37 +545,40 @@
 
       <!-- Card 1: violet (specialist) -->
       <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-1">
-        <span class="eh-card-badge">No pressure</span>
+        <span class="eh-card-badge">20–40 days</span>
         <div class="eh-card-inner">
-          <h3 class="eh-card__title">See if it clicks</h3>
-          <p class="eh-card__desc">A demo shaped around your business — not a generic pitch. Walk away knowing if it's the right fit.</p>
+          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-1.png" width="48" height="48" alt="" loading="lazy">
+          <h3 class="eh-card__title">Evaluation</h3>
+          <p class="eh-card__desc">Compare providers → Get demos → Get sign-off</p>
         </div>
       </div>
 
       <!-- Card 2: violet -->
       <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-2">
-        <span class="eh-card-badge">Step by step</span>
+        <span class="eh-card-badge">10–30 days</span>
         <div class="eh-card-inner">
-          <h3 class="eh-card__title">Set up without the guesswork</h3>
-          <p class="eh-card__desc">Built-in guidance walks you through every configuration decision — so nothing gets missed and nothing gets assumed.</p>
+          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-2.png" width="48" height="48" alt="" loading="lazy">
+          <h3 class="eh-card__title">HR Setup</h3>
+          <p class="eh-card__desc">Import employee data → Configure settings &amp; policies → Train admins</p>
         </div>
       </div>
 
       <!-- Card 3: violet -->
       <div class="eh-card-wrap eh-card-wrap--specialist eh-card-anim-3">
-        <span class="eh-card-badge">Pay day, sorted</span>
+        <span class="eh-card-badge">15–30 days</span>
         <div class="eh-card-inner">
-          <h3 class="eh-card__title">Nail your first pay run</h3>
-          <p class="eh-card__desc">Smart checks and in-product prompts catch issues before they become problems — so your team gets paid right, first time.</p>
+          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-3.png" width="48" height="48" alt="" loading="lazy">
+          <h3 class="eh-card__title">Payroll Setup</h3>
+          <p class="eh-card__desc">Setup payroll schedule &amp; settings → Import YTDs → Train admins</p>
         </div>
       </div>
 
       <!-- Card 4: green -->
       <div class="eh-card-wrap eh-card-wrap--green eh-card-anim-4">
-        <span class="eh-card-badge">Always on</span>
+        <span class="eh-card-badge">Go live</span>
         <div class="eh-card-inner">
-          <h3 class="eh-card__title">We grow with you</h3>
-          <p class="eh-card__desc">As your business evolves, Employment Hero keeps up — with always-updated guidance, compliance changes handled, and support when you need it.</p>
+          <img class="eh-card-icon" src="https://employmenthero.com/wp-content/uploads/2026/04/unnamed-4.png" width="48" height="48" alt="" loading="lazy">
+          <h3 class="eh-card__title">Process your first seamless payroll</h3>
         </div>
       </div>
 
