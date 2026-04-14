@@ -369,5 +369,55 @@
   })();
 </script>
 
+<!--
+  Scroll depth tracking — fires Optimizely events at 25 / 50 / 75 / 100 %
+  Experiment : 4590101221605376
+  Variation  : 5332234358489088  (Variation #1)
+  Events fire once per page load; rAF-throttled for performance.
+  scroll_100 triggers at ≥ 99 % to handle sub-pixel gaps at page bottom.
+-->
+<script>
+  (function () {
+    'use strict';
+    var fired = {};
+    var thresholds = [
+      { pct: 25, key: 'scroll_25'  },
+      { pct: 50, key: 'scroll_50'  },
+      { pct: 75, key: 'scroll_75'  },
+      { pct: 99, key: 'scroll_100' }
+    ];
+
+    function scrollDepth() {
+      var el = document.documentElement;
+      var scrollable = el.scrollHeight - el.clientHeight;
+      if (scrollable <= 0) return 100;
+      return Math.min(100, Math.round((el.scrollTop / scrollable) * 100));
+    }
+
+    function trackEvent(key) {
+      (window['optimizely'] = window['optimizely'] || []).push({
+        type: 'event',
+        eventName: key
+      });
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var depth = scrollDepth();
+        thresholds.forEach(function (t) {
+          if (!fired[t.key] && depth >= t.pct) {
+            fired[t.key] = true;
+            trackEvent(t.key);
+          }
+        });
+        ticking = false;
+      });
+    }, { passive: true });
+  }());
+</script>
+
 </body>
 </html>
